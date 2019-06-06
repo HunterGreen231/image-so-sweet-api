@@ -22,15 +22,17 @@ ma = Marshmallow(app)
 class Image(db.Model):
     __tablename__ = "todos"
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(1000), nullable=False)
+    image_url = db.Column(db.String(1000), nullable=False, unique=True)
+    session = db.Column(db.String(100))
 
-    def __init__(self, image_url):
+    def __init__(self, image_url, session):
         self.image_url = image_url
+        self.session = session
 
 
 class ImagesSchema(ma.Schema):
     class Meta:
-        fields = ("id", "image_url")
+        fields = ("id", "image_url", "session")
 
 
 image_schema = ImagesSchema()
@@ -47,8 +49,9 @@ def get_images():
 @app.route("/add-image", methods=["POST"])
 def add_image():
     image_url = request.json["image_url"]
+    session = request.json["session"]
 
-    record = Image(image_url)
+    record = Image(image_url, session)
 
     db.session.add(record)
     db.session.commit()
@@ -62,8 +65,10 @@ def update_image(id):
     image = Image.query.get(id)
 
     new_image_url = request.json["image_url"]
+    new_session = request.json["session"]
 
     image.image_url = new_image_url
+    image.session = new_session
 
     db.session.commit()
     return image_schema.jsonify(image)
