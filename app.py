@@ -22,7 +22,7 @@ ma = Marshmallow(app)
 class Image(db.Model):
     __tablename__ = "todos"
     id = db.Column(db.Integer, primary_key=True)
-    image_url = db.Column(db.String(1000), nullable=False)
+    image_url = db.Column(db.String(1000), nullable=False, primary_key=True)
 
     def __init__(self, image_url):
         self.image_url = image_url
